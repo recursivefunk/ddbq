@@ -1,4 +1,19 @@
-function queryBuilder({ reset = false } = {}) {
+const required = ['table'];
+
+function queryBuilder(opts = {}) {
+  const presentOpts = Object.keys(opts).filter((k) => !!k);
+
+  required.forEach((requiredKey) => {
+    if (!presentOpts.includes(requiredKey)) {
+      throw new Error(`Missing required option: ${requiredKey}`);
+    }
+  });
+
+  // Default options
+  const _timestamp = opts.timestamp || '_updatedAt';
+  const _reset = opts.reset || false;
+
+  // Closure state
   let _hasUpdates = false;
   let _hasRemovals = false;
   let _removals = [];
@@ -38,15 +53,16 @@ function queryBuilder({ reset = false } = {}) {
      * @param {?string} params.returnValues
      */
     params({ returnValues = 'ALL_NEW' } = {}) {
-      const updatedAt = new Date().toISOString();
+      const ts = new Date().toISOString();
       const params = {
+        TableName: opts.table,
         ExpressionAttributeNames: {
-          '#updatedAt': '_updatedAt',
+          '#updatedAt': _timestamp,
           ..._attributeNames,
           ..._removalAttributeNames,
         },
         ExpressionAttributeValues: {
-          ':updatedAt': updatedAt,
+          ':updatedAt': ts,
           ..._attributeValues,
         },
         ReturnValues: returnValues,
@@ -54,12 +70,12 @@ function queryBuilder({ reset = false } = {}) {
 
       if (_hasUpdates || _hasRemovals) {
         params.UpdateExpression = printUpdateExpression(
-          Object.keys(_attributeNames),
+          ['#updatedAt', ...Object.keys(_attributeNames)],
           _removals
         ).trim();
       }
 
-      if (reset) this._reset();
+      if (_reset) this._reset();
 
       return params;
     },

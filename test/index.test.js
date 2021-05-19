@@ -1,8 +1,10 @@
 const { QueryBuilder } = require('../src/index');
 
 describe('Update Expression', () => {
+  const table = 'my-table';
+
   it('should build a standard update expression', () => {
-    const builder = QueryBuilder();
+    const builder = QueryBuilder({ table });
     const params = builder
       .update({
         item: 'value',
@@ -11,7 +13,9 @@ describe('Update Expression', () => {
       .params();
 
     expect(params).toEqual({
-      UpdateExpression: 'SET #item = :item, #item2 = :item2',
+      TableName: table,
+      UpdateExpression:
+        'SET #updatedAt = :updatedAt, #item = :item, #item2 = :item2',
       ExpressionAttributeNames: {
         '#updatedAt': '_updatedAt',
         '#item': 'item',
@@ -27,7 +31,7 @@ describe('Update Expression', () => {
   });
 
   it('should build an update expression with removals', () => {
-    const builder = QueryBuilder();
+    const builder = QueryBuilder({ table });
     const params = builder
       .update({
         item: 'value',
@@ -37,7 +41,9 @@ describe('Update Expression', () => {
       .params();
 
     expect(params).toEqual({
-      UpdateExpression: 'SET #item = :item, #item2 = :item2 REMOVE #removeMe',
+      TableName: table,
+      UpdateExpression:
+        'SET #updatedAt = :updatedAt, #item = :item, #item2 = :item2 REMOVE #removeMe',
       ExpressionAttributeNames: {
         '#updatedAt': '_updatedAt',
         '#item': 'item',
