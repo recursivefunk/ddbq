@@ -5,13 +5,12 @@ function queryBuilder(opts = {}) {
 
   required.forEach((requiredKey) => {
     if (!presentOpts.includes(requiredKey)) {
-      throw new Error(`Missing required option: ${requiredKey}`);
+      throw new Error(`Missing required option: '${requiredKey}'`);
     }
   });
 
   // Default options
   const _timestamp = opts.timestamp || '_updatedAt';
-  const _reset = opts.reset || false;
 
   // Closure state
   let _hasUpdates = false;
@@ -74,8 +73,6 @@ function queryBuilder(opts = {}) {
           _removals
         ).trim();
       }
-
-      if (_reset) this._reset();
 
       return params;
     },

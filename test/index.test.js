@@ -1,5 +1,11 @@
 const { QueryBuilder } = require('../src/index');
 
+describe('Initialization', () => {
+  it('should throw error when missing table option', () => {
+    expect(() => QueryBuilder()).toThrow("Missing required option: 'table'");
+  });
+});
+
 describe('Update Expression', () => {
   const table = 'my-table';
 
