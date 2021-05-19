@@ -1,4 +1,4 @@
-const required = ['table'];
+const required = ['table', 'key'];
 
 function queryBuilder(opts = {}) {
   const presentOpts = Object.keys(opts).filter((k) => !!k);
@@ -54,6 +54,7 @@ function queryBuilder(opts = {}) {
     params({ returnValues = 'ALL_NEW' } = {}) {
       const ts = new Date().toISOString();
       const params = {
+        Key: opts.key,
         TableName: opts.table,
         ExpressionAttributeNames: {
           '#updatedAt': _timestamp,
@@ -77,6 +78,7 @@ function queryBuilder(opts = {}) {
       return params;
     },
 
+    /* istanbul ignore next */
     _reset() {
       _hasUpdates = false;
       _hasRemovals = false;
@@ -89,16 +91,16 @@ function queryBuilder(opts = {}) {
 }
 
 /**
- * @param {Array<String>} attrNames
+ * @param {Array<String>} updates
  * @param {Array<String>} removals
  */
-function printUpdateExpression(attrNames, removals) {
+function printUpdateExpression(updates, removals) {
   let updateExpression = '';
-  const updateLen = Object.keys(attrNames).length;
+  const updateLen = updates.length;
   const removalLen = removals.length;
 
   if (updateLen) {
-    updateExpression += attrNames.reduce((accum, key, i) => {
+    updateExpression += updates.reduce((accum, key, i) => {
       accum += `${key} = :${key.substring(1)}`;
 
       if (i + 1 < updateLen) {
