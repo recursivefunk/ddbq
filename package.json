@@ -1,6 +1,6 @@
 {
   "name": "ddbq",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A light wrapper for dynamodb queries",
   "main": "src/index.js",
   "engines": {
